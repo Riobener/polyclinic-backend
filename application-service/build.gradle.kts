@@ -20,8 +20,9 @@ repositories {
 
 dependencies {
 	testImplementation("com.ninja-squad:springmockk:3.0.1")
+	implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
 	implementation("io.micrometer:micrometer-registry-prometheus:1.10.2")
-	implementation("org.springframework.boot:spring-boot-starter-actuator:3.0.1")
+	implementation("org.springframework.boot:spring-boot-starter-actuator:2.7.5")
 	implementation("org.springframework.boot:spring-boot-starter-jdbc")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
@@ -29,8 +30,6 @@ dependencies {
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-	implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.3.2")
-	testImplementation("org.springframework.security:spring-security-test")
 	runtimeOnly("com.h2database:h2")
 	runtimeOnly("org.postgresql:postgresql")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
