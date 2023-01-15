@@ -11,8 +11,8 @@ import java.util.UUID
 
 @Repository
 interface PaymentJpaRepository : JpaRepository<JpaPayment, UUID> {
-    //fun findById(id: UUID): JpaPayment?
-    fun findByApplicationId(applicationId: String): JpaPayment?
+    // fun findById(id: UUID): JpaPayment?
+    fun findByApplicationId(applicationId: UUID): JpaPayment?
     fun save(jpaPayment: JpaPayment): JpaPayment
 }
 
@@ -29,7 +29,7 @@ class PaymentRepositoryImpl(
         return jpaPaymentRepository.findById(id).orElse(null)
     }
 
-    override fun findByApplicationId(applicationId: String): JpaPayment? {
+    override fun findByApplicationId(applicationId: UUID): JpaPayment? {
         return jpaPaymentRepository.findByApplicationId(applicationId)
     }
 }

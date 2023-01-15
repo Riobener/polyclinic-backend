@@ -8,7 +8,7 @@ import java.util.*
 data class JpaPayment(
     @Id
     val id: UUID?,
-    val applicationId: String,
+    val applicationId: UUID,
     val status: Boolean,
 ) {
 

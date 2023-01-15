@@ -13,15 +13,15 @@ class PaymentService(
     private val paymentRepository: PaymentRepository,
 ){
 
-    fun findById(userId: String): JpaPayment? {
-        return paymentRepository.findById(UUID.fromString(userId))
+    fun findById(id: UUID): JpaPayment? {
+        return paymentRepository.findById(id)
     }
 
-    fun findByApplicationId(applicationId: String): JpaPayment? {
+    fun findByApplicationId(applicationId: UUID): JpaPayment? {
         return paymentRepository.findByApplicationId((applicationId))
     }
 
-    fun markAsPaid(applicationId: String) {
+    fun markAsPaid(applicationId: UUID) {
         paymentRepository.save(JpaPayment(UUID.randomUUID(),applicationId,true))
     }
 
