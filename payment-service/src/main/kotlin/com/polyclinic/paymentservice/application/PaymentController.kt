@@ -3,7 +3,7 @@ import com.polyclinic.paymentservice.infrastructure.services.PaymentService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-
+import java.util.*
 
 
 @RestController
@@ -14,7 +14,7 @@ class PaymentController(
     private val paymentService: PaymentService,
 ) {
     @PostMapping("/payments/markPaid", "application/json")
-    fun markAsPaid(@RequestParam applicationId: String): ResponseEntity<*>? {
+    fun markAsPaid(@RequestParam applicationId: UUID): ResponseEntity<*>? {
         val result = paymentService.markAsPaid(applicationId)
         return ResponseEntity.ok(result)
     }
@@ -26,13 +26,13 @@ class PaymentController(
     }
 
     @GetMapping("/payments/byApplication", "application/json")
-    fun findByApplicationId(@RequestParam applicationId: String): ResponseEntity<*>? {
+    fun findByApplicationId(@RequestParam applicationId: UUID): ResponseEntity<*>? {
         val result = paymentService.findByApplicationId(applicationId)
         return ResponseEntity.ok(result)
     }
 
     @GetMapping("/payments/byId", "application/json")
-    fun findById(@RequestParam applicationId: String): ResponseEntity<*>? {
+    fun findById(@RequestParam applicationId: UUID): ResponseEntity<*>? {
         val result = paymentService.findById(applicationId)
         return ResponseEntity.ok(result)
     }

@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 @Serializable
 data class PaymentResponse(
     val id: UUID,
-    val applicationId: String,
+    val applicationId: UUID,
     val status: Boolean,
 )
 

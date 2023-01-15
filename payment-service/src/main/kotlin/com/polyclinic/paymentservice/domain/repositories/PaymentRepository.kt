@@ -6,5 +6,5 @@ import java.util.UUID
 interface PaymentRepository {
     fun save(jpaPayment: JpaPayment): JpaPayment
     fun findById(id: UUID): JpaPayment?
-    fun findByApplicationId(applicationId: String): JpaPayment?
+    fun findByApplicationId(applicationId: UUID): JpaPayment?
 }
