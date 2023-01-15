@@ -1,0 +1,103 @@
+{
+  "$schema": "https://www.krakend.io/schema/v3.json",
+  "version": 3,
+  "name": "KrakenD - API Gateway",
+  "timeout": "3000ms",
+  "cache_ttl": "300s",
+  "output_encoding": "no-op",
+  "port": 8080,
+  "sequential_start": false,
+  "endpoints": [
+    {
+      "endpoint": "/kraken/applications/",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "input_headers": [
+        "User"
+      ],
+      "extra_config": {
+        "auth/validator": {
+          "alg": "RS256",
+          "jwk_url": "http://host.docker.internal:8484/auth/realms/master/protocol/openid-connect/certs",
+          "roles_key_is_nested": true,
+          "roles_key": "realm_access.roles",
+          "roles": ["medic"],
+          "disable_jwk_security": true,
+          "propagate_claims": [
+            ["sub", "User"]
+          ]
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/applications/",
+          "encoding": "no-op",
+          "sd": "static",
+          "method": "POST",
+          "host": [
+            "http://host.docker.internal:8081"
+          ],
+          "disable_host_sanitize": false,
+          "extra_config": {
+            "modifier/martian": {
+              "header.Modifier": {
+                "scope": ["request", "response"],
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "endpoint": "/kraken/auth/",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "backend": [
+        {
+          "url_pattern": "/auth/realms/master/protocol/openid-connect/token",
+          "encoding": "no-op",
+          "sd": "static",
+          "method": "POST",
+          "host": [
+            "http://host.docker.internal:8484"
+          ],
+          "disable_host_sanitize": false
+        }
+      ]
+    }
+  ],
+  "extra_config":{
+    "telemetry/metrics": {
+      "collection_time": "30s",
+      "listen_address": ":8090"
+    },
+    "telemetry/influx": {
+      "address": "http://host.docker.internal:8086",
+      "ttl": "25s",
+      "buffer_size": 100,
+      "username": "kraken",
+      "password": "pass"
+    },
+    "telemetry/opencensus": {
+      "sample_rate": 100,
+      "reporting_period": 0,
+      "exporters": {
+        "prometheus": {
+          "port": 8091,
+          "namespace": "krakend",
+          "tag_host": false,
+          "tag_path": true,
+          "tag_method": true,
+          "tag_statuscode": false
+        },
+        "jaeger": {
+          "endpoint": "http://host.docker.internal:14268/api/traces",
+          "service_name":"krakend",
+          "buffer_max_count": 1000
+        }
+      }
+    }
+  }
+}
