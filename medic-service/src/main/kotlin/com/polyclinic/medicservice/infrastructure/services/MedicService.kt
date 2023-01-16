@@ -41,6 +41,10 @@ class MedicService (
         medicRepository.saveAll(medics)
     }
 
+    fun saveMedic(medic: JpaMedic){
+        medicRepository.save(medic)
+    }
+
     fun updateMedic(medicDto: MedicDto){
         val medic = medicRepository.findByAccountId(medicDto.accountId)
         medicRepository.delete(medic!!)

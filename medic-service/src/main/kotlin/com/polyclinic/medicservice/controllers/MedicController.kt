@@ -55,6 +55,7 @@ class MedicController (
             val time = Instant.parse(appointment.appointmentTime)
             if(it.availableTimeList.any{availableTime -> availableTime == time}){
                 it.availableTimeList.remove(time)
+                medicService.saveMedic(it)
                 return ResponseEntity.ok(true)
             }
             return ResponseEntity.ok(false)
