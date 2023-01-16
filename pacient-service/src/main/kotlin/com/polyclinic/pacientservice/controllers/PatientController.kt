@@ -22,6 +22,8 @@ class PatientController(
     private val patientService: PatientService
 ) {
 
+    @GetMapping("/health")
+    fun checkHealth() = "All good"
 
     @GetMapping("/find/full/byAccountId/{accountId}")
     fun getFullPatient(@PathVariable accountId: UUID): Patient? {

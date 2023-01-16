@@ -15,7 +15,8 @@ class MedicController (
     @Autowired
     private val medicService: MedicService
 ) {
-
+    @GetMapping("/health")
+    fun checkHealth() = "All good"
     @GetMapping("/find/all")
     fun getAllMedics():List<JpaMedic>{
         return medicService.findAllMedics()

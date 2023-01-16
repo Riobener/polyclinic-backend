@@ -2,7 +2,88 @@ version: "3"
 
 services:
 
-  application-db:
+ medic-db:
+  image: 'postgres:latest'
+  container_name: medic-db
+  ports:
+    - 5435:5432
+  environment:
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=postgres
+    - POSTGRES_DB=medic
+  healthcheck:
+    test: ["CMD-SHELL", "pg_isready", "-d", "medic"]
+    interval: 10s
+    timeout: 5s
+    retries: 5
+    start_period: 10s
+
+
+ medic-service:
+    build:
+      context: /medic-service
+      dockerfile: Dockerfile
+    ports:
+      - 8083:8083
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5435/medic
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://host.docker.internal:8083/medic/health" ]
+      interval: 10s
+      timeout: 30s
+      retries: 5
+      start_period: 5s
+    depends_on:
+      medic-db:
+        condition: service_healthy
+    links:
+      - medic-db
+
+ patient-db:
+    image: 'postgres:latest'
+    container_name: patient-db
+    ports:
+      - 5434:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=patient
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready", "-d", "patient"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+
+ pacient-service:
+    build:
+      context: /pacient-service
+      dockerfile: Dockerfile
+    ports:
+      - 8082:8082
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5434/patient
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://host.docker.internal:8082/patient/health" ]
+      interval: 10s
+      timeout: 30s
+      retries: 5
+      start_period: 5s
+    depends_on:
+      patient-db:
+        condition: service_healthy
+    links:
+      - patient-db
+
+
+ application-db:
     image: 'postgres:latest'
     container_name: application-db
     ports:
@@ -17,9 +98,9 @@ services:
       timeout: 5s
       retries: 5
       start_period: 10s
-      
 
-  application-service:
+
+ application-service:
     build:
       context: /application-service
       dockerfile: Dockerfile
@@ -42,7 +123,7 @@ services:
     links:
       - application-db
 
-  krakend_ce:
+ krakend_ce:
     build:
       context: ../polyclinic-backend/
       dockerfile: Dockerfile
@@ -58,7 +139,7 @@ services:
     links:
       - application-service
 
-  jaeger-allinone:
+ jaeger-allinone:
     image: jaegertracing/all-in-one:latest
     ports:
       - 6831:6831/udp
@@ -76,7 +157,7 @@ services:
     links:
       - krakend_ce
 
-  influxdb:
+ influxdb:
     image: influxdb:1.8.10
     environment:
       - "INFLUXDB_DB=krakend"
@@ -87,7 +168,7 @@ services:
     ports:
       - "8086:8086"
 
-  keycloak-db:
+ keycloak-db:
     image: 'postgres:latest'
     container_name: keycloak-db
     ports:
@@ -99,7 +180,7 @@ services:
     networks:
       - local-keycloak
 
-  keycloak:
+ keycloak:
     depends_on:
       - keycloak-db
     container_name: local_keycloak
