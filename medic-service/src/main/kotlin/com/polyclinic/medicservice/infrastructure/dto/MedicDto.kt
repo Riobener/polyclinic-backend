@@ -8,3 +8,8 @@ data class MedicDto(
     val fio: String,
     val availableTimeList: List<Instant>,
 )
+
+data class MedicTimeInputDto(
+    val id: String,
+    val appointmentTime: String,
+)

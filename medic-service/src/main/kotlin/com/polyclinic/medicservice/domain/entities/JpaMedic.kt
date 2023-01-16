@@ -10,5 +10,6 @@ data class JpaMedic(
     val id: UUID,
     val accountId: UUID,
     val fio: String,
-    val availableTimeList: List<Instant>,
+    @ElementCollection
+    val availableTimeList: MutableList<Instant>,
 )

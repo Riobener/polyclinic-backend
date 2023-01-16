@@ -4,6 +4,7 @@ import com.polyclinic.medicservice.domain.entities.JpaMedic
 import com.polyclinic.medicservice.infrastructure.dto.MedicDto
 import com.polyclinic.medicservice.infrastructure.persistence.MedicJpaRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.io.File
 import java.util.*
@@ -16,6 +17,10 @@ class MedicService (
 
     fun findByAccountId(accountId:UUID): JpaMedic? {
         return medicRepository.findByAccountId(accountId)
+    }
+
+    fun findById(id:UUID): JpaMedic? {
+        return medicRepository.findByIdOrNull(id)
     }
 
     fun findAllMedics(): List<JpaMedic> =
@@ -43,7 +48,7 @@ class MedicService (
             id = medic.id,
             accountId = medicDto.accountId,
             fio = medicDto.fio,
-            availableTimeList = medicDto.availableTimeList))
+            availableTimeList = medicDto.availableTimeList.toMutableList()))
     }
 
 }

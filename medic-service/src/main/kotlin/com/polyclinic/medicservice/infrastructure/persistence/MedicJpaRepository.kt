@@ -7,8 +7,5 @@ import java.util.*
 
 @Repository
 interface MedicJpaRepository :JpaRepository<JpaMedic, UUID> {
-
     fun findByAccountId(accountId:UUID):JpaMedic?
-    fun deleteByAccountId(accountId:UUID):JpaMedic?
-
 }
