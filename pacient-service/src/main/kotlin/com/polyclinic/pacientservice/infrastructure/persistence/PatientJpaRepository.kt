@@ -7,5 +7,5 @@ import java.util.*
 @Repository
 interface PatientJpaRepository :JpaRepository<Patient, UUID> {
     fun findByAccountId(accountId:UUID):Patient?
-
+    fun deleteByAccountId(accountId:UUID):Patient?
 }

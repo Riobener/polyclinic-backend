@@ -17,8 +17,8 @@ data class Patient(
     val birthdayDate: Instant,
     val sex:String,
     @ElementCollection
-    @CollectionTable(name = "medcart_date_mapping",
-        joinColumns = [JoinColumn(name = "medcart_id", referencedColumnName = "id")]
+    @CollectionTable(name = "history",
+        joinColumns = [JoinColumn(name = "account_id", referencedColumnName = "id")]
     )
     @MapKeyColumn(name = "date")
     @Column(name = "description")
