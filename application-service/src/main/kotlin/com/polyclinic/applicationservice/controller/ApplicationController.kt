@@ -1,8 +1,6 @@
 package com.polyclinic.applicationservice.controller
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.google.gson.JsonElement
-import com.google.gson.JsonObject
 import com.polyclinic.applicationservice.dto.ApplicationCreationDto
 import com.polyclinic.applicationservice.dto.ApplicationInputDto
 import com.polyclinic.applicationservice.dto.ApplicationResponseDto
@@ -13,9 +11,7 @@ import com.polyclinic.applicationservice.entity.ApplicationType
 import com.polyclinic.applicationservice.entity.JpaApplication
 import com.polyclinic.applicationservice.service.ApplicationService
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpEntity
-import org.springframework.http.HttpHeaders
-import org.springframework.http.MediaType
+import org.springframework.context.annotation.Bean
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.RestTemplate
@@ -27,10 +23,9 @@ import java.util.*
 @RequestMapping("/applications")
 class ApplicationController(
     private val applicationService: ApplicationService,
-    @Autowired
-    private val restTemplate: RestTemplate,
 ) {
-
+    @Autowired
+    lateinit var restTemplate: RestTemplate
 
     @GetMapping("/health")
     fun checkHealth() = "All good"
@@ -82,7 +77,7 @@ class ApplicationController(
         }
     }
 
-    @GetMapping("/assignTreatment")
+    @PostMapping("/assignTreatment")
     fun assignTreatmentById(
         @RequestHeader(name = "User") userId: String,
         @RequestBody applicationInput: ApplicationInputDto,
@@ -100,7 +95,7 @@ class ApplicationController(
         }?.toDto())
     }
 
-    @GetMapping("/finish")
+    @PostMapping("/finish")
     fun finishApplicationAndAssignPayment(
         @RequestHeader(name = "User") userId: String,
         @RequestBody applicationInput: ApplicationInputDto,
@@ -114,11 +109,10 @@ class ApplicationController(
         }?.toDto())
     }
 
-    //Для другого сервиса
-    @GetMapping("/reject/{id}")
+    @PostMapping("/reject/{id}")
     fun rejectApplication(
         @RequestHeader(name = "User") userId: String,
-        @RequestParam(name = "id") applicationId: String,
+        @PathVariable(name = "id") applicationId: String,
     ): ResponseEntity<ApplicationResponseDto> {
         return ResponseEntity.ok(
             applicationService.findById(UUID.fromString(applicationId))?.let {
@@ -126,7 +120,13 @@ class ApplicationController(
                 it.status = ApplicationStatus.REJECTED
                 it.updateAt = Instant.now()
                 if (it.appointmentDate.isBefore(Instant.now())) {
-                    //TODO Добавить время врачу, в случае отклонения (запрос к сервису)
+                    val body = MedicTimeInputDto(appointmentTime = it.appointmentDate.toString(), id = it.medicId.toString())
+                    val marshaled = ObjectMapper().writeValueAsString(body)
+                    restTemplate.postForEntity(
+                        "http://localhost:8083/medic/appointment/free/",
+                        marshaled,
+                        Boolean::class.java
+                    ).body
                 }
                 applicationService.saveApplication(it)
             }?.toDto()
@@ -134,9 +134,9 @@ class ApplicationController(
     }
 
     //Для сервиса платежей
-    @GetMapping("/close/{id}")
+    @PostMapping("/close/{id}")
     fun closeApplicationAfterPayment(
-        @RequestParam(name = "id") paymentId: String,
+        @PathVariable(name = "id") paymentId: String,
     ): ResponseEntity<ApplicationResponseDto> {
         //TODO проверка на то, что payment оплачен (запрос к сервису)
         return ResponseEntity.ok(applicationService.findByPaymentId(UUID.fromString(paymentId))?.let {
@@ -149,10 +149,18 @@ class ApplicationController(
     //Для другого сервиса
     @GetMapping("/byId/{id}")
     fun getApplicationByAccountId(
-        @RequestParam(name = "id") applicationId: String,
+        @PathVariable(name = "id") applicationId: String,
     ): ResponseEntity<ApplicationResponseDto> {
         return ResponseEntity.ok(
             applicationService.findById(UUID.fromString(applicationId))?.toDto()
+        )
+    }
+
+    //Для другого сервиса
+    @GetMapping("/types")
+    fun getApplicationTypes(): ResponseEntity<List<String>> {
+        return ResponseEntity.ok(
+            ApplicationType.values().map{it.name}
         )
     }
 

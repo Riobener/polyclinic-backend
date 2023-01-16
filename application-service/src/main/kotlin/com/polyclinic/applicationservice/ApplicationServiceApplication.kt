@@ -12,8 +12,3 @@ class ApplicationServiceApplication
 fun main(args: Array<String>) {
     runApplication<ApplicationServiceApplication>(*args)
 }
-
-@Bean
-fun restTemplate(): RestTemplate {
-    return RestTemplate()
-}
