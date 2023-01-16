@@ -10,8 +10,12 @@ import com.polyclinic.applicationservice.entity.ApplicationStatus
 import com.polyclinic.applicationservice.entity.ApplicationType
 import com.polyclinic.applicationservice.entity.JpaApplication
 import com.polyclinic.applicationservice.service.ApplicationService
+import mu.KotlinLogging
+import org.json.JSONArray
+import org.json.JSONObject
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.context.annotation.Bean
+import org.springframework.http.HttpHeaders
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import org.springframework.web.client.RestTemplate
@@ -30,17 +34,25 @@ class ApplicationController(
     @GetMapping("/health")
     fun checkHealth() = "All good"
 
+    private val logger = KotlinLogging.logger {}
+
+    fun getRoleFromJson(json: String): String{
+        val role = JSONObject(json)
+        val objTso = role.getJSONArray("roles")
+        return objTso.getString(0)
+    }
+
     @PostMapping("/")
     fun saveApplication(
         @RequestHeader(name = "User") userId: String,
-        @RequestHeader(name = "Role") role: String,
+        @RequestHeader(name = "roles") role: String,
         @RequestBody creationDto: ApplicationCreationDto
     ): ResponseEntity<ApplicationResponseDto> {
-        check(role == "patient") { "Заявку может создать только пациент" }
+        check(getRoleFromJson(role) == "patient") { "Заявку может создать только пациент" }
         val body = MedicTimeInputDto(appointmentTime = creationDto.appointmentDate, id = creationDto.medicId.toString())
         val marshaled = ObjectMapper().writeValueAsString(body)
         val isMedicFree = restTemplate.postForEntity(
-            "http://localhost:8083/medic/appointment/",
+            "http://host.docker.internal:8083/medic/appointment",
             marshaled,
             Boolean::class.java
         ).body
@@ -123,7 +135,7 @@ class ApplicationController(
                     val body = MedicTimeInputDto(appointmentTime = it.appointmentDate.toString(), id = it.medicId.toString())
                     val marshaled = ObjectMapper().writeValueAsString(body)
                     restTemplate.postForEntity(
-                        "http://localhost:8083/medic/appointment/free/",
+                        "http://host.docker.internal:8083/medic/appointment/free",
                         marshaled,
                         Boolean::class.java
                     ).body
@@ -138,7 +150,7 @@ class ApplicationController(
     fun closeApplicationAfterPayment(
         @PathVariable(name = "id") paymentId: String,
     ): ResponseEntity<ApplicationResponseDto> {
-        //TODO проверка на то, что payment оплачен (запрос к сервису)
+        //TODO приходит из брокера после оплаты
         return ResponseEntity.ok(applicationService.findByPaymentId(UUID.fromString(paymentId))?.let {
             it.status = ApplicationStatus.CLOSED
             it.updateAt = Instant.now()

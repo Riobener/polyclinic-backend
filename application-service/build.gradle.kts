@@ -6,6 +6,7 @@ plugins {
 	kotlin("jvm") version "1.7.21"
 	kotlin("plugin.spring") version "1.7.21"
 	kotlin("plugin.jpa") version "1.7.21"
+
 }
 
 group = "com.riobener"
@@ -20,6 +21,7 @@ repositories {
 
 dependencies {
 	testImplementation("com.ninja-squad:springmockk:3.0.1")
+	implementation("org.json:json:20160810")
 	implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
 	implementation("io.micrometer:micrometer-registry-prometheus:1.10.2")
 	implementation("org.springframework.boot:spring-boot-starter-actuator:2.7.5")

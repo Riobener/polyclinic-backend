@@ -25,14 +25,9 @@ class MedicController(
         return medicService.findAllMedics().filter { it.availableTimeList.isNotEmpty() }
     }
 
-    @GetMapping("/find/full/byAccountId/{accountId}")
-    fun getFullMedic(@PathVariable accountId: UUID): JpaMedic? {
-        return medicService.findByAccountId(accountId)
-    }
-
-    @GetMapping("/find/byAccountId/{accountId}")
-    fun getMedic(@PathVariable accountId: UUID): MedicDto? {
-        return medicService.findDtoMedicByAccountId(accountId)
+    @GetMapping("/find/full/byId/{id}")
+    fun getFullMedic(@PathVariable(name="id") id: UUID): JpaMedic? {
+        return medicService.findById(id)
     }
 
     @PostMapping("/update")
@@ -63,7 +58,7 @@ class MedicController(
         return ResponseEntity.ok(false)
     }
 
-    @PostMapping("/appointment/free/")
+    @PostMapping("/appointment/free")
     fun updateTimeByApplicationRejection(@RequestBody appointment: MedicTimeInputDto): ResponseEntity<Boolean> {
         medicService.findById(UUID.fromString(appointment.id))?.let {
             val time = Instant.parse(appointment.appointmentTime)

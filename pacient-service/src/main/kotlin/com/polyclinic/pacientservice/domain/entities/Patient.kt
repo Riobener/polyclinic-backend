@@ -10,7 +10,6 @@ import java.util.*
 data class Patient(
     @Id
     val id: UUID,
-    val accountId: UUID,
     val fio: String,
     val address:String,
     val phone:String,
