@@ -7,12 +7,8 @@ import com.polyclinic.pacientservice.infrastructure.services.PatientService
 import jakarta.servlet.http.HttpServletResponse
 import org.apache.tomcat.util.http.fileupload.IOUtils
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.data.repository.findByIdOrNull
-import org.springframework.http.HttpStatus
-import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
-import org.springframework.web.multipart.MultipartFile
 import java.io.File
 import java.io.FileInputStream
 import java.io.InputStream
@@ -39,7 +35,7 @@ class PatientController(
     @GetMapping("/export/{id}")
     fun exportPatient(@PathVariable id: String,  response: HttpServletResponse) {
         patientService.findById(UUID.fromString(id))?.let { patient ->
-            File("${patient.fio} Медкарта.txt").bufferedWriter().use { out ->
+            File("${patient.id}.txt").bufferedWriter().use { out ->
                 out.write("ФИО:${patient.fio}\n")
                 out.write("Адрес:${patient.address}\n")
                 out.write("Телефон:${patient.phone}\n")
@@ -50,12 +46,10 @@ class PatientController(
                     out.write("${it}\n")
                 }
             }
-            val inputStream: InputStream = FileInputStream(File("${patient.fio} Медкарта.txt"))
-            response.setContentType("application/octet-stream");
-            response.setHeader("Content-Disposition",
-                "attachment;filename="+filename);
-            IOUtils.copy(inputStream, response.getOutputStream())
-            response.setContentType("application/");
+            response.contentType = "application/octet-stream"
+            response.setHeader("Content-Disposition","attachment;filename="+"${patient.id}.txt")
+            val inputStream: InputStream = FileInputStream(File("${patient.id}.txt"))
+            IOUtils.copy(inputStream, response.outputStream)
             response.flushBuffer()
         }
     }
