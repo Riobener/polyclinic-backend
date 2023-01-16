@@ -19,8 +19,8 @@ class PaymentController(
     fun checkHealth() = "All good"
 
     @PostMapping("/markPaid")
-    fun markAsPaid(@RequestParam applicationId: UUID): ResponseEntity<*>? {
-        val result = paymentService.markAsPaid(applicationId)
+    fun markAsPaid(@RequestParam id: UUID): ResponseEntity<*>? {
+        val result = paymentService.markAsPaid(id)
         return ResponseEntity.ok(result)
     }
 
@@ -38,15 +38,9 @@ class PaymentController(
         )
     }
 
-    @GetMapping("/byApplication")
-    fun findByApplicationId(@RequestParam applicationId: UUID): ResponseEntity<*>? {
-        val result = paymentService.findByApplicationId(applicationId)
-        return ResponseEntity.ok(result)
-    }
-
     @GetMapping("/byId")
-    fun findById(@RequestParam applicationId: UUID): ResponseEntity<*>? {
-        val result = paymentService.findById(applicationId)
+    fun findById(@RequestParam id: UUID): ResponseEntity<*>? {
+        val result = paymentService.findById(id)
         return ResponseEntity.ok(result)
     }
 }

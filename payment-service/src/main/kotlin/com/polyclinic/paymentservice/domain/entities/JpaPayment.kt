@@ -9,7 +9,7 @@ import java.util.*
 data class JpaPayment(
     @Id
     val id: UUID?,
-    val status: Boolean,
+    var status: Boolean,
     val updateAt: Instant,
     val cost: Int,
 )

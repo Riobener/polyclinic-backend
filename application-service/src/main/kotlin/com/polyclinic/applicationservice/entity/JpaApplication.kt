@@ -18,7 +18,7 @@ data class JpaApplication(
     var status: ApplicationStatus,
     @Enumerated(EnumType.STRING)
     val type: ApplicationType,
-    val paymentId: UUID? = null,
+    var paymentId: UUID? = null,
     var treatmentComment: String? = null,
     var directionComment: String? = null,
     var nextAppointmentDate: Instant? = null,
