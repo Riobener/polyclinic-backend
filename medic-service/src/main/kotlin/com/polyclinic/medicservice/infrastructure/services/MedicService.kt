@@ -13,28 +13,27 @@ class MedicService (
     @Autowired
     private val medicRepository: MedicJpaRepository
 ){
-/*
-    fun findById(id:UUID): JpaMedic? {
-        return medicRepository.findById(id)
-    }
-*/
+
     fun findByAccountId(accountId:UUID): JpaMedic? {
         return medicRepository.findByAccountId(accountId)
     }
 
-    fun getAllMedics(medicId: UUID): List<JpaMedic> =
-        medicRepository.getAllMedics(medicId)
+    fun findAllMedics(): List<JpaMedic> =
+        medicRepository.findAll()
 
-    fun findDtoPatientByAccountId(accountId: UUID):MedicDto?{
+    fun findDtoMedicByAccountId(accountId: UUID):MedicDto?{
         val medic = medicRepository.findByAccountId(accountId)
         if (medic != null) {
             return MedicDto(
-                medic.id,
                 medic.accountId,
                 medic.fio,
                 medic.availableTimeList)
         }
         return null
+    }
+
+    fun saveAllMedics(medics:List<JpaMedic>){
+        medicRepository.saveAll(medics)
     }
 
     fun updateMedic(medicDto: MedicDto){

@@ -23,12 +23,12 @@ class PatientController(
 ) {
 
 
-    @GetMapping("/find/full/{accountId}")
+    @GetMapping("/find/full/byAccountId/{accountId}")
     fun getFullPatient(@PathVariable accountId: UUID): Patient? {
         return patientService.findByAccountId(accountId)
     }
 
-    @GetMapping("/find/{accountId}")
+    @GetMapping("/find/byAccountId/{accountId}")
     fun getPatient(@PathVariable accountId: UUID): PatientDto? {
         return patientService.findDtoPatientByAccountId(accountId)
     }
@@ -45,6 +45,20 @@ class PatientController(
         patientService.updatePatient(patientDto)
         return ResponseEntity.ok()
             .body("Пациент успешно обновлён")
+    }
+
+    @PostMapping("/save/all")
+    fun saveAllPatients(@RequestBody patients:List<Patient>): ResponseEntity<String> {
+        patientService.saveAllPatients(patients)
+        return ResponseEntity.ok()
+            .body("Пациенты успешно добавлены")
+    }
+
+    @PostMapping("/save")
+    fun savePatient(@RequestBody patient: Patient):ResponseEntity<String> {
+        patientService.savePatient(patient)
+        return ResponseEntity.ok()
+            .body("Пациент успешно добавлен")
     }
 
 }

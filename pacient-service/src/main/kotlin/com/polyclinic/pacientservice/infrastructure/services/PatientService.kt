@@ -34,7 +34,7 @@ class PatientService (
     fun updatePatient(patientDto: PatientDto){
         val patient = patientRepository.findByAccountId(patientDto.accountId)
         patientRepository.delete(patient!!)
-        patientRepository.save(Patient(
+            patientRepository.save(Patient(
             id = patient.id,
             accountId = patientDto.accountId,
             fio = patientDto.fio,
@@ -43,6 +43,10 @@ class PatientService (
             birthdayDate = patientDto.birthdayDate,
             sex = patientDto.sex,
             medicalHistory = patientDto.medicalHistory))
+    }
+
+    fun saveAllPatients(patients:List<Patient>){
+        patientRepository.saveAll(patients)
     }
 
     fun createFile(accountId: UUID){
@@ -60,5 +64,9 @@ class PatientService (
                 }
             }
         }
+    }
+
+    fun savePatient(patient: Patient) {
+    patientRepository.save(patient)
     }
 }

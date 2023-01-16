@@ -10,11 +10,5 @@ data class JpaMedic(
     val id: UUID,
     val accountId: UUID,
     val fio: String,
-    @ElementCollection
-    @CollectionTable(name = "history",
-        joinColumns = [JoinColumn(name = "account_id", referencedColumnName = "id")]
-    )
-    @MapKeyColumn(name = "date")
-    @Column(name = "AvailableTime")
     val availableTimeList: List<Instant>,
 )

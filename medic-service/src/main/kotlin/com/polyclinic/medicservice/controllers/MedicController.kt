@@ -15,14 +15,19 @@ class MedicController (
     @Autowired
     private val medicService: MedicService
 ) {
-    @GetMapping("/find/full/{accountId}")
+
+    @GetMapping("/find/all")
+    fun getAllMedics():List<JpaMedic>{
+        return medicService.findAllMedics()
+    }
+    @GetMapping("/find/full/byAccountId/{accountId}")
     fun getFullMedic(@PathVariable accountId: UUID): JpaMedic? {
         return medicService.findByAccountId(accountId)
     }
 
-    @GetMapping("/find/{accountId}")
-    fun getPatient(@PathVariable accountId: UUID): MedicDto? {
-        return medicService.findDtoPatientByAccountId(accountId)
+    @GetMapping("/find/byAccountId/{accountId}")
+    fun getMedic(@PathVariable accountId: UUID): MedicDto? {
+        return medicService.findDtoMedicByAccountId(accountId)
     }
 
     @PostMapping("/update")
@@ -31,4 +36,14 @@ class MedicController (
         return ResponseEntity.ok()
             .body("Доктор успешно обновлён")
     }
+
+    @PostMapping("/save/all")
+    fun addAllMedics(@RequestBody medics:List<JpaMedic>): ResponseEntity<String> {
+        medicService.saveAllMedics(medics)
+        return ResponseEntity.ok()
+            .body("Доктора успешно добавлены")
+    }
+
+
+
 }
