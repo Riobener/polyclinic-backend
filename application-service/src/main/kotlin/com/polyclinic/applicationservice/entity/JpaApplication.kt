@@ -13,21 +13,22 @@ data class JpaApplication(
     val id: UUID,
     val patientId: UUID,
     val medicId: UUID,
+    val appointmentDate: Instant,
     @Enumerated(EnumType.STRING)
-    val status: ApplicationStatus,
+    var status: ApplicationStatus,
     @Enumerated(EnumType.STRING)
     val type: ApplicationType,
     val paymentId: UUID? = null,
-    val treatmentComment: String? = null,
-    val directionComment: String? = null,
-    val updateAt: Instant,
+    var treatmentComment: String? = null,
+    var directionComment: String? = null,
+    var nextAppointmentDate: Instant? = null,
+    var updateAt: Instant,
 )
 
 enum class ApplicationStatus{
     IN_PROCESS,
-    COMPLETED,
+    CLOSED,
     REJECTED,
-    WAITING_FOR_TESTS,
     WAITING_FOR_REVISIT,
     WAITING_FOR_PAYMENT,
 }

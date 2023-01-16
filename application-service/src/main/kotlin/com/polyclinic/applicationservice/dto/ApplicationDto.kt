@@ -6,9 +6,18 @@ import java.util.*
 data class ApplicationCreationDto(
     val medicId: UUID,
     val type: String,
+    val appointmentDate: String,
+)
+
+data class ApplicationInputDto(
+    val id: String,
+    val treatmentComment: String,
+    val directionComment: String,
+    val nextAppointmentDate: String,
 )
 
 data class ApplicationResponseDto(
+    val id: UUID,
     val patientId: UUID,
     val medicId: UUID,
     val status: String,
