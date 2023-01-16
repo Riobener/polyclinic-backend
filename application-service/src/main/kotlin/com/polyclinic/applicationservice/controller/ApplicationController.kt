@@ -28,7 +28,7 @@ class ApplicationController(
         @RequestHeader(name = "Role") role: String,
         @RequestBody creationDto: ApplicationCreationDto
     ): ResponseEntity<ApplicationResponseDto> {
-        check(role == "patient") { "Задачу может создать только пациент" }
+        check(role == "patient") { "Заявку может создать только пациент" }
         //TODO проверка сервиса врача на доступность времени
         return ResponseEntity.ok(
             applicationService.saveApplication(
@@ -66,7 +66,7 @@ class ApplicationController(
     ): ResponseEntity<ApplicationResponseDto> {
         return ResponseEntity.ok(applicationService.findById(UUID.fromString(applicationInput.id))?.let {
             val nextAppointmentTime = Instant.parse(applicationInput.nextAppointmentDate)
-            check(it.medicId == UUID.fromString(userId)) { "Задачу может менять только врач, относящийся к ней непосредственно" }
+            check(it.medicId == UUID.fromString(userId)) { "Заявку может менять только врач, относящийся к ней непосредственно" }
             check(nextAppointmentTime.isAfter(Instant.now())) { "Время следующего посещения не может быть раньше текущего" }
             it.treatmentComment = applicationInput.treatmentComment
             it.directionComment = applicationInput.directionComment
@@ -83,12 +83,31 @@ class ApplicationController(
         @RequestBody applicationInput: ApplicationInputDto,
     ): ResponseEntity<ApplicationResponseDto> {
         return ResponseEntity.ok(applicationService.findById(UUID.fromString(applicationInput.id))?.let {
-            check(it.medicId == UUID.fromString(userId)) { "Задачу может закрыть только врач, относящийся к ней непосредственно" }
+            check(it.medicId == UUID.fromString(userId)) { "Заявку может завершить только врач, относящийся к ней непосредственно" }
             it.status = ApplicationStatus.WAITING_FOR_PAYMENT
             it.updateAt = Instant.now()
             //TODO it.paymentId = сервис создает payment и возвращает id
             applicationService.saveApplication(it)
         }?.toDto())
+    }
+
+    //Для другого сервиса
+    @GetMapping("/reject/{id}")
+    fun rejectApplication(
+        @RequestHeader(name = "User") userId: String,
+        @RequestParam(name = "id") applicationId: String,
+    ): ResponseEntity<ApplicationResponseDto> {
+        return ResponseEntity.ok(
+            applicationService.findById(UUID.fromString(applicationId))?.let{
+                check(it.patientId == UUID.fromString(userId)){ "Заявку может отклонить только пациент" }
+                it.status = ApplicationStatus.REJECTED
+                it.updateAt = Instant.now()
+                if(it.appointmentDate.isBefore(Instant.now())){
+                    //TODO Добавить время врачу, в случае отклонения (запрос к сервису)
+                }
+                applicationService.saveApplication(it)
+            }?.toDto()
+        )
     }
 
     //Для сервиса платежей
