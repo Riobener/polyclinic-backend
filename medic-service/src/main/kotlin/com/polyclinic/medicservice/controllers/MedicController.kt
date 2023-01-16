@@ -13,7 +13,7 @@ import java.util.*
 @RestController
 
 @RequestMapping("/medic")
-class MedicController (
+class MedicController(
     @Autowired
     private val medicService: MedicService
 ) {
@@ -21,7 +21,7 @@ class MedicController (
     fun checkHealth() = "All good"
 
     @GetMapping("/find/all")
-    fun getAllMedics():List<JpaMedic>{
+    fun getAllMedics(): List<JpaMedic> {
         return medicService.findAllMedics().filter { it.availableTimeList.isNotEmpty() }
     }
 
@@ -43,7 +43,7 @@ class MedicController (
     }
 
     @PostMapping("/save/all")
-    fun addAllMedics(@RequestBody medics:List<JpaMedic>): ResponseEntity<String> {
+    fun addAllMedics(@RequestBody medics: List<JpaMedic>): ResponseEntity<String> {
         medicService.saveAllMedics(medics)
         return ResponseEntity.ok()
             .body("Доктора успешно добавлены")
@@ -51,9 +51,9 @@ class MedicController (
 
     @PostMapping("/appointment/")
     fun updateTime(@RequestBody appointment: MedicTimeInputDto): ResponseEntity<Boolean> {
-        medicService.findById(UUID.fromString(appointment.id))?.let{
+        medicService.findById(UUID.fromString(appointment.id))?.let {
             val time = Instant.parse(appointment.appointmentTime)
-            if(it.availableTimeList.any{availableTime -> availableTime == time}){
+            if (it.availableTimeList.any { availableTime -> availableTime == time }) {
                 it.availableTimeList.remove(time)
                 medicService.saveMedic(it)
                 return ResponseEntity.ok(true)
@@ -63,6 +63,14 @@ class MedicController (
         return ResponseEntity.ok(false)
     }
 
-
-
+    @PostMapping("/appointment/free/")
+    fun updateTimeByApplicationRejection(@RequestBody appointment: MedicTimeInputDto): ResponseEntity<Boolean> {
+        medicService.findById(UUID.fromString(appointment.id))?.let {
+            val time = Instant.parse(appointment.appointmentTime)
+            it.availableTimeList.add(time)
+            medicService.saveMedic(it)
+            return ResponseEntity.ok(true)
+        }
+        return ResponseEntity.ok(false)
+    }
 }
