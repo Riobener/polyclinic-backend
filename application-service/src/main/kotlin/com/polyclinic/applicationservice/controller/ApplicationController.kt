@@ -1,24 +1,37 @@
 package com.polyclinic.applicationservice.controller
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.google.gson.JsonElement
+import com.google.gson.JsonObject
 import com.polyclinic.applicationservice.dto.ApplicationCreationDto
 import com.polyclinic.applicationservice.dto.ApplicationInputDto
 import com.polyclinic.applicationservice.dto.ApplicationResponseDto
+import com.polyclinic.applicationservice.dto.MedicTimeInputDto
 import com.polyclinic.applicationservice.dto.mapper.toDto
 import com.polyclinic.applicationservice.entity.ApplicationStatus
 import com.polyclinic.applicationservice.entity.ApplicationType
 import com.polyclinic.applicationservice.entity.JpaApplication
 import com.polyclinic.applicationservice.service.ApplicationService
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
+import org.springframework.web.client.RestTemplate
 import java.time.Instant
 import java.util.*
+
 
 @RestController
 @RequestMapping("/applications")
 class ApplicationController(
     private val applicationService: ApplicationService,
+    @Autowired
+    private val restTemplate: RestTemplate,
 ) {
+
+
     @GetMapping("/health")
     fun checkHealth() = "All good"
 
@@ -29,20 +42,30 @@ class ApplicationController(
         @RequestBody creationDto: ApplicationCreationDto
     ): ResponseEntity<ApplicationResponseDto> {
         check(role == "patient") { "Заявку может создать только пациент" }
-        //TODO проверка сервиса врача на доступность времени
-        return ResponseEntity.ok(
-            applicationService.saveApplication(
-                JpaApplication(
-                    id = UUID.randomUUID(),
-                    patientId = UUID.fromString(userId),
-                    medicId = creationDto.medicId,
-                    appointmentDate = Instant.parse(creationDto.appointmentDate),
-                    status = ApplicationStatus.IN_PROCESS,
-                    type = ApplicationType.valueOf(creationDto.type),
-                    updateAt = Instant.now(),
-                )
-            ).toDto()
-        )
+        val body = MedicTimeInputDto(appointmentTime = creationDto.appointmentDate, id = creationDto.medicId.toString())
+        val marshaled = ObjectMapper().writeValueAsString(body)
+        val isMedicFree = restTemplate.postForEntity(
+            "http://localhost:8083/medic/appointment/",
+            marshaled,
+            Boolean::class.java
+        ).body
+        if(isMedicFree!!){
+            return ResponseEntity.ok(
+                applicationService.saveApplication(
+                    JpaApplication(
+                        id = UUID.randomUUID(),
+                        patientId = UUID.fromString(userId),
+                        medicId = creationDto.medicId,
+                        appointmentDate = Instant.parse(creationDto.appointmentDate),
+                        status = ApplicationStatus.IN_PROCESS,
+                        type = ApplicationType.valueOf(creationDto.type),
+                        updateAt = Instant.now(),
+                    )
+                ).toDto()
+            )
+        } else{
+            return ResponseEntity.badRequest().body(null)
+        }
     }
 
     @GetMapping("/byAccount")
@@ -98,11 +121,11 @@ class ApplicationController(
         @RequestParam(name = "id") applicationId: String,
     ): ResponseEntity<ApplicationResponseDto> {
         return ResponseEntity.ok(
-            applicationService.findById(UUID.fromString(applicationId))?.let{
-                check(it.patientId == UUID.fromString(userId)){ "Заявку может отклонить только пациент" }
+            applicationService.findById(UUID.fromString(applicationId))?.let {
+                check(it.patientId == UUID.fromString(userId)) { "Заявку может отклонить только пациент" }
                 it.status = ApplicationStatus.REJECTED
                 it.updateAt = Instant.now()
-                if(it.appointmentDate.isBefore(Instant.now())){
+                if (it.appointmentDate.isBefore(Instant.now())) {
                     //TODO Добавить время врачу, в случае отклонения (запрос к сервису)
                 }
                 applicationService.saveApplication(it)
