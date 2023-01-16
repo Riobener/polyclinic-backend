@@ -6,6 +6,4 @@ import org.springframework.stereotype.Repository
 import java.util.*
 @Repository
 interface PatientJpaRepository :JpaRepository<Patient, UUID> {
-    fun findByAccountId(accountId:UUID):Patient?
-    fun deleteByAccountId(accountId:UUID):Patient?
 }

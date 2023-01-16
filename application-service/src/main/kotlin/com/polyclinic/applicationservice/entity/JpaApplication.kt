@@ -20,6 +20,7 @@ data class JpaApplication(
     val type: ApplicationType,
     var paymentId: UUID? = null,
     var treatmentComment: String? = null,
+    var diagnosisComment: String? = null,
     var directionComment: String? = null,
     var nextAppointmentDate: Instant? = null,
     var updateAt: Instant,

@@ -3,6 +3,7 @@ package com.polyclinic.applicationservice.controller
 import com.polyclinic.applicationservice.dto.ApplicationCreationDto
 import com.polyclinic.applicationservice.dto.ApplicationInputDto
 import com.polyclinic.applicationservice.dto.MedicTimeInputDto
+import com.polyclinic.applicationservice.dto.PatientMedicalHistoryInputDto
 import com.polyclinic.applicationservice.entity.ApplicationStatus
 import com.polyclinic.applicationservice.entity.ApplicationType
 import com.polyclinic.applicationservice.entity.JpaApplication
@@ -95,6 +96,7 @@ class ApplicationController(
                 return ResponseEntity.badRequest().body("Время следующего посещения не может быть раньше текущего")
             it.treatmentComment = applicationInput.treatmentComment
             it.directionComment = applicationInput.directionComment
+            it.diagnosisComment = applicationInput.diagnosisComment
             it.updateAt = Instant.now()
             it.status = ApplicationStatus.WAITING_FOR_REVISIT
             it.nextAppointmentDate = nextAppointmentTime
@@ -117,6 +119,8 @@ class ApplicationController(
             headers.accept = Arrays.asList(MediaType.APPLICATION_JSON)
             val entity: HttpEntity<MedicTimeInputDto> = HttpEntity<MedicTimeInputDto>(MedicTimeInputDto(appointmentTime = it.appointmentDate.toString(), id = it.medicId.toString()), headers)
             val paymentId = restTemplate.exchange("http://localhost:8085/payments/create", HttpMethod.POST, entity, String::class.java).body
+            val entityTwo: HttpEntity<PatientMedicalHistoryInputDto> = HttpEntity<PatientMedicalHistoryInputDto>(PatientMedicalHistoryInputDto(id = it.patientId.toString(), date = it.appointmentDate.toString(), description = it.diagnosisComment!!), headers)
+            restTemplate.exchange("http://localhost:8082/patient/medical/history", HttpMethod.POST, entityTwo, String::class.java)
             it.paymentId = UUID.fromString(paymentId)
             applicationService.saveApplication(it)
         })

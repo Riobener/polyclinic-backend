@@ -11,6 +11,7 @@ data class ApplicationCreationDto(
 
 data class ApplicationInputDto(
     val id: String,
+    val diagnosisComment: String,
     val treatmentComment: String,
     val directionComment: String,
     val nextAppointmentDate: String,
