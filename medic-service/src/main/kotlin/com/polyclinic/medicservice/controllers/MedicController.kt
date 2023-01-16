@@ -49,7 +49,7 @@ class MedicController(
             .body("Доктора успешно добавлены")
     }
 
-    @PostMapping("/appointment/")
+    @PostMapping("/appointment")
     fun updateTime(@RequestBody appointment: MedicTimeInputDto): ResponseEntity<Boolean> {
         medicService.findById(UUID.fromString(appointment.id))?.let {
             val time = Instant.parse(appointment.appointmentTime)

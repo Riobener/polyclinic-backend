@@ -21,7 +21,7 @@ services:
 
  medic-service:
     build:
-      context: /medic-service
+      context: medic-service
       dockerfile: Dockerfile
     ports:
       - 8083:8083
@@ -42,6 +42,46 @@ services:
     links:
       - medic-db
 
+ payment-db:
+  image: 'postgres:latest'
+  container_name: payment-db
+  ports:
+    - 5437:5432
+  environment:
+    - POSTGRES_USER=postgres
+    - POSTGRES_PASSWORD=postgres
+    - POSTGRES_DB=payment
+  healthcheck:
+    test: ["CMD-SHELL", "pg_isready", "-d", "payment"]
+    interval: 10s
+    timeout: 5s
+    retries: 5
+    start_period: 10s
+
+
+ payment-service:
+    build:
+      context: payment-service
+      dockerfile: Dockerfile
+    ports:
+      - 8085:8085
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://host.docker.internal:5437/payment
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=postgres
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://host.docker.internal:8085/payment/health" ]
+      interval: 10s
+      timeout: 30s
+      retries: 5
+      start_period: 5s
+    depends_on:
+      payment-db:
+        condition: service_healthy
+    links:
+      - payment-db
+
  patient-db:
     image: 'postgres:latest'
     container_name: patient-db
@@ -61,7 +101,7 @@ services:
 
  pacient-service:
     build:
-      context: /pacient-service
+      context: pacient-service
       dockerfile: Dockerfile
     ports:
       - 8082:8082
