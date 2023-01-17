@@ -2,7 +2,7 @@ import requests
 
 applicationCreateApi = 'http://localhost:8081/applications/'
 
-medicCreateApi = 'http://localhost:8081/medic/save/all'
+medicCreateApi = 'http://localhost:8083/medic/save/all'
 
 applicationTreatmentApi = 'http://localhost:8081/applications/assignTreatment'
 
