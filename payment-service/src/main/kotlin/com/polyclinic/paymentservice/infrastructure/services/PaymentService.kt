@@ -16,8 +16,8 @@ class PaymentService(
         return paymentRepository.findByIdOrNull(id)
     }
 
-    fun markAsPaid(applicationId: UUID) {
-        paymentRepository.findByIdOrNull(applicationId)?.let{
+    fun markAsPaid(applicationId: UUID): JpaPayment? {
+        return paymentRepository.findByIdOrNull(applicationId)?.let{
             it.status = true
             paymentRepository.save(it)
         }

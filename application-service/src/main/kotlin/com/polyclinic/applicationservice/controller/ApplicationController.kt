@@ -149,19 +149,6 @@ class ApplicationController(
         )
     }
 
-    //Для сервиса платежей
-    @PostMapping("/close/{id}")
-    fun closeApplicationAfterPayment(
-        @PathVariable(name = "id") paymentId: String,
-    ): ResponseEntity<Any> {
-        //TODO приходит из брокера после оплаты
-        return ResponseEntity.ok(applicationService.findByPaymentId(UUID.fromString(paymentId))?.let {
-            it.status = ApplicationStatus.CLOSED
-            it.updateAt = Instant.now()
-            applicationService.saveApplication(it)
-        })
-    }
-
     //Для другого сервиса
     @GetMapping("/byId/{id}")
     fun getApplicationByAccountId(

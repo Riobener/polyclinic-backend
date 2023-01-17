@@ -21,10 +21,12 @@ repositories {
 dependencies {
 	testImplementation("com.ninja-squad:springmockk:3.0.1")
 	implementation("io.micrometer:micrometer-registry-prometheus:1.10.2")
+	implementation("io.github.microutils:kotlin-logging-jvm:2.0.11")
 	implementation("org.springframework.boot:spring-boot-starter-actuator:3.0.1")
 	implementation("org.springframework.boot:spring-boot-starter-jdbc")
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	implementation("org.springframework.boot:spring-boot-starter-web")
+	implementation("org.springframework.boot:spring-boot-starter-amqp")
 	implementation ("io.opentracing.contrib:opentracing-spring-jaeger-web-starter:3.3.1")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
