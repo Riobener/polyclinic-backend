@@ -26,7 +26,7 @@ class PaymentController(
 
     fun sendPaymentReadyMessage(paymentId: String) {
         val factory = ConnectionFactory()
-        factory.setHost("localhost")
+        factory.setHost("host.docker.internal")
         val connection: Connection = factory.newConnection()
         val channel: Channel = connection.createChannel()
         channel.queueDeclare(
