@@ -11,11 +11,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-        
-      - name: Build Docker Image
-        run: docker build application-service --file application-service/Dockerfile -t riobener/application-service
-      - name: Run Docker Container
-        run: docker run -p 8081:8081 -d riobener/application-service
+      - name: Build Rabbit
+        run: docker run -p 5672:5672 -p 15672:15762 -d --hostname my-rabbit --name some-rabbit rabbitmq:3-management-alpine
       - name: Build Docker Image1
         run: docker build medic-service --file medic-service/Dockerfile -t riobener/medic-service
       - name: Run Docker Container1
@@ -24,6 +21,10 @@ jobs:
         run: docker build payment-service --file payment-service/Dockerfile -t riobener/payment-service
       - name: Run Docker Container12
         run: docker run -p 8085:8085 -d riobener/payment-service
+      - name: Build Docker Image
+        run: docker build application-service --file application-service/Dockerfile -t riobener/application-service
+      - name: Run Docker Container
+        run: docker run -p 8081:8081 -d riobener/application-service
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
