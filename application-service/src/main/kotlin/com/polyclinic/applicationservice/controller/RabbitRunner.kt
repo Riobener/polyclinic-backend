@@ -20,7 +20,7 @@ class RabbitRunner(
     override fun run(args: ApplicationArguments?) {
         val QUEUE_NAME = "payment";
         val factory = ConnectionFactory()
-        factory.setHost("host.docker.internal")
+        factory.setHost("localhost")
         val connection: Connection = factory.newConnection()
         val channel: Channel = connection.createChannel()
         channel.queueDeclare(
