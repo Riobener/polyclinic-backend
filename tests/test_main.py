@@ -1,16 +1,16 @@
 import requests
 
-applicationCreateApi = 'http://host.docker.internal:8081/applications/'
+applicationCreateApi = 'http://localhost:8081/applications/'
 
-medicCreateApi = 'http://host.docker.internal:8083/medic/save/all'
+medicCreateApi = 'http://localhost:8083/medic/save/all'
 
-applicationTreatmentApi = 'http://host.docker.internal:8081/applications/assignTreatment'
+applicationTreatmentApi = 'http://localhost:8081/applications/assignTreatment'
 
-applicationFinishApi = 'http://host.docker.internal:8081/applications/finish'
+applicationFinishApi = 'http://localhost:8081/applications/finish'
 
-paymentFinishApi = 'http://host.docker.internal:8085/payments/markPaid'
+paymentFinishApi = 'http://localhost:8085/payments/markPaid'
 
-applicationsFindAllApi = 'http://host.docker.internal:8081/applications/byAccount'
+applicationsFindAllApi = 'http://localhost:8081/applications/byAccount'
 
 applicationId = ''
 
