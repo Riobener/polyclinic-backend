@@ -2,29 +2,29 @@ version: "3"
 
 services:
 
- rabbitmq:
-  image: rabbitmq:3-management-alpine
-  container_name: 'rabbitmq'
-  ports:
-    - 5672:5672
-    - 15672:15672
- medic-db:
-  image: 'postgres:latest'
-  container_name: medic-db
-  ports:
-    - 5435:5432
-  environment:
-    - POSTGRES_USER=postgres
-    - POSTGRES_PASSWORD=postgres
-    - POSTGRES_DB=medic
-  healthcheck:
-    test: ["CMD-SHELL", "pg_isready", "-d", "medic"]
-    interval: 10s
-    timeout: 5s
-    retries: 5
-    start_period: 10s
+  rabbitmq:
+    image: rabbitmq:3-management-alpine
+    container_name: 'rabbitmq'
+    ports:
+      - 5672:5672
+      - 15672:15672
+  medic-db:
+    image: 'postgres:latest'
+    container_name: medic-db
+    ports:
+      - 5435:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=medic
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready", "-d", "medic" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
- medic-service:
+  medic-service:
     build:
       context: medic-service
       dockerfile: Dockerfile
@@ -47,24 +47,24 @@ services:
     links:
       - medic-db
 
- payment-db:
-  image: 'postgres:latest'
-  container_name: payment-db
-  ports:
-    - 5437:5432
-  environment:
-    - POSTGRES_USER=postgres
-    - POSTGRES_PASSWORD=postgres
-    - POSTGRES_DB=payment
-  healthcheck:
-    test: ["CMD-SHELL", "pg_isready", "-d", "payment"]
-    interval: 10s
-    timeout: 5s
-    retries: 5
-    start_period: 10s
+  payment-db:
+    image: 'postgres:latest'
+    container_name: payment-db
+    ports:
+      - 5437:5432
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=payment
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready", "-d", "payment" ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
 
 
- payment-service:
+  payment-service:
     build:
       context: payment-service
       dockerfile: Dockerfile
@@ -87,7 +87,7 @@ services:
     links:
       - payment-db
 
- patient-db:
+  patient-db:
     image: 'postgres:latest'
     container_name: patient-db
     ports:
@@ -97,14 +97,14 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=patient
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready", "-d", "patient"]
+      test: [ "CMD-SHELL", "pg_isready", "-d", "patient" ]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
 
 
- pacient-service:
+  pacient-service:
     build:
       context: pacient-service
       dockerfile: Dockerfile
@@ -128,7 +128,7 @@ services:
       - patient-db
 
 
- application-db:
+  application-db:
     image: 'postgres:latest'
     container_name: application-db
     ports:
@@ -138,14 +138,14 @@ services:
       - POSTGRES_PASSWORD=postgres
       - POSTGRES_DB=application
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready", "-d", "application"]
+      test: [ "CMD-SHELL", "pg_isready", "-d", "application" ]
       interval: 10s
       timeout: 5s
       retries: 5
       start_period: 10s
 
 
- application-service:
+  application-service:
     build:
       context: application-service
       dockerfile: Dockerfile
@@ -168,7 +168,7 @@ services:
     links:
       - application-db
 
- krakend_ce:
+  krakend_ce:
     build:
       context: ../polyclinic-backend/
       dockerfile: Dockerfile
@@ -184,7 +184,7 @@ services:
     links:
       - application-service
 
- jaeger-allinone:
+  jaeger-allinone:
     image: jaegertracing/all-in-one:latest
     ports:
       - 6831:6831/udp
@@ -201,8 +201,32 @@ services:
         condition: service_started
     links:
       - krakend_ce
+  grafana:
+    build: './config/grafana'
+    ports:
+      - 3000:3000
+    volumes:
+      - ./grafana:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    networks:
+      monitoring:
+        aliases:
+          - grafana
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./config/prometheus.yml:/etc/prometheus/prometheus.yml
+      - ./prometheus:/prometheus
+    networks:
+      monitoring:
+        aliases:
+          - prometheus
 
- influxdb:
+  influxdb:
     image: influxdb:1.8.10
     environment:
       - "INFLUXDB_DB=krakend"
@@ -213,7 +237,7 @@ services:
     ports:
       - "8086:8086"
 
- keycloak-db:
+  keycloak-db:
     image: 'postgres:latest'
     container_name: keycloak-db
     ports:
@@ -225,7 +249,7 @@ services:
     networks:
       - local-keycloak
 
- keycloak:
+  keycloak:
     depends_on:
       - keycloak-db
     container_name: local_keycloak
