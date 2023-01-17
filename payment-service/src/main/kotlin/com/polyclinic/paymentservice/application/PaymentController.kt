@@ -51,8 +51,8 @@ class PaymentController(
     @PostMapping("/health")
     fun checkHealth() = "All good"
 
-    @PostMapping("/markPaid/{applicationId}")
-    fun markAsPaid(@RequestHeader(name = "User") userId: String, @PathVariable(name = "applicationId") applicationId: String): ResponseEntity<Any> {
+        @PostMapping("/markPaid/{applicationId}")
+    fun markPaid(@RequestHeader(name = "User") userId: String, @PathVariable(name = "applicationId") applicationId: String): ResponseEntity<Any> {
         return ResponseEntity.ok(
             paymentService.findByApplicationId(UUID.fromString(applicationId))?.let {
                 if(it.userId != UUID.fromString(userId))

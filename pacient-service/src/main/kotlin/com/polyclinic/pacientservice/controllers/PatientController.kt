@@ -34,9 +34,9 @@ class PatientController(
         return ResponseEntity.ok(patientService.findById(UUID.fromString(userId)))
     }
 
-    @GetMapping("/export/{id}")
-    fun exportPatient(@PathVariable id: String, response: HttpServletResponse) {
-        patientService.findById(UUID.fromString(id))?.let { patient ->
+    @GetMapping("/export")
+    fun exportPatient(@RequestHeader(name = "User") userId: String, response: HttpServletResponse) {
+        patientService.findById(UUID.fromString(userId))?.let { patient ->
             File("${patient.id}.txt").bufferedWriter().use { out ->
                 out.write("ФИО:${patient.fio}\n")
                 out.write("Адрес:${patient.address}\n")
