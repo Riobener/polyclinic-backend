@@ -12,18 +12,18 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v3
         
-      - name: Build Docker Image
-        run: docker build application-service --file application-service/Dockerfile -t riobener/application-service
-      - name: Run Docker Container
-        run: docker run -p 8081:8081 -d riobener/application-service
+#       - name: Build Docker Image
+#         run: docker build application-service --file application-service/Dockerfile -t riobener/application-service
+#       - name: Run Docker Container
+#         run: docker run -p 8081:8081 -d riobener/application-service
       - name: Build Docker Image1
         run: docker build medic-service --file medic-service/Dockerfile -t riobener/medic-service
       - name: Run Docker Container1
         run: docker run -p 8083:8083 -d riobener/medic-service
-      - name: Build Docker Image12
-        run: docker build payment-service --file payment-service/Dockerfile -t riobener/payment-service
-      - name: Run Docker Container12
-        run: docker run -p 8085:8085 -d riobener/payment-service
+#       - name: Build Docker Image12
+#         run: docker build payment-service --file payment-service/Dockerfile -t riobener/payment-service
+#       - name: Run Docker Container12
+#         run: docker run -p 8085:8085 -d riobener/payment-service
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
@@ -33,7 +33,7 @@ jobs:
       - name: Install requests
         run: pip install requests
       - name: sleep
-        run: sleep 60
+        run: sleep 20
       - name: Run tests
         run: pytest 
       - name: sleep
