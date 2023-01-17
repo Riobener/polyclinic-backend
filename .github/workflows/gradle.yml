@@ -33,7 +33,7 @@ jobs:
       - name: Install requests
         run: pip install requests
       - name: sleep
-        run: sleep 20
+        run: sleep 10
       - name: Check containers
         run: docker ps -a
       - name: Run tests
