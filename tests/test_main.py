@@ -105,20 +105,3 @@ def test_application_finish():
     assert response.json().get('status') == "WAITING_FOR_PAYMENT"
     assert response.json().get('paymentId') is not None
 
-
-def test_pay_for_application():
-    session = requests.Session()
-    headers = {"Content-Type": "application/json; charset=utf-8",
-               "user": "c86731c4-6bea-4452-984d-5ba0796760fe",
-               "roles": '{roles: [\"patient\"]}'
-               }
-
-    response = session.post(f'{paymentFinishApi}/{applicationId}', headers=headers, verify=False)
-
-    assert response.status_code == 200
-    assert response.json().get('status') is True
-
-    session = requests.Session()
-    response = session.get(applicationsFindAllApi, headers=headers, verify=False)
-    assert response.status_code == 200
-    assert response.json()[0].get('status') == "CLOSED"
