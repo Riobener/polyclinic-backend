@@ -46,7 +46,7 @@ class ApplicationController(
         headers.contentType = MediaType.APPLICATION_JSON
         headers.accept = Arrays.asList(MediaType.APPLICATION_JSON)
         val entity: HttpEntity<MedicTimeInputDto> = HttpEntity<MedicTimeInputDto>(MedicTimeInputDto(appointmentTime = creationDto.appointmentDate, id = creationDto.medicId.toString()), headers)
-        val isMedicFree = restTemplate.exchange("http://host.docker.internal:8083/medic/appointment", HttpMethod.POST, entity, Boolean::class.java).body
+        val isMedicFree = restTemplate.exchange("http://localhost:8083/medic/appointment", HttpMethod.POST, entity, Boolean::class.java).body
         if(isMedicFree!!){
             return ResponseEntity.ok(
                 applicationService.saveApplication(
@@ -115,9 +115,9 @@ class ApplicationController(
             headers.contentType = MediaType.APPLICATION_JSON
             headers.accept = Arrays.asList(MediaType.APPLICATION_JSON)
             val entity: HttpEntity<PaymentInputDto> = HttpEntity<PaymentInputDto>(PaymentInputDto(userId = it.patientId.toString(), applicationId = it.id.toString()), headers)
-            val paymentId = restTemplate.exchange("http://host.docker.internal:8085/payments/create", HttpMethod.POST, entity, String::class.java).body
+            val paymentId = restTemplate.exchange("http://localhost:8085/payments/create", HttpMethod.POST, entity, String::class.java).body
             val entityTwo: HttpEntity<PatientMedicalHistoryInputDto> = HttpEntity<PatientMedicalHistoryInputDto>(PatientMedicalHistoryInputDto(id = it.patientId.toString(), date = it.appointmentDate.toString(), description = it.diagnosisComment!!), headers)
-            restTemplate.exchange("http://host.docker.internal:8082/patient/medical/history", HttpMethod.POST, entityTwo, String::class.java)
+            restTemplate.exchange("http://localhost:8082/patient/medical/history", HttpMethod.POST, entityTwo, String::class.java)
             it.paymentId = UUID.fromString(paymentId)
             applicationService.saveApplication(it)
         })
@@ -139,7 +139,7 @@ class ApplicationController(
                     headers.contentType = MediaType.APPLICATION_JSON
                     headers.accept = Arrays.asList(MediaType.APPLICATION_JSON)
                     val entity: HttpEntity<MedicTimeInputDto> = HttpEntity<MedicTimeInputDto>(MedicTimeInputDto(appointmentTime = it.appointmentDate.toString(), id = it.medicId.toString()), headers)
-                    restTemplate.exchange("http://host.docker.internal:8083/medic/appointment/free", HttpMethod.POST, entity, Boolean::class.java).body
+                    restTemplate.exchange("http://localhost:8083/medic/appointment/free", HttpMethod.POST, entity, Boolean::class.java).body
                 }
                 applicationService.saveApplication(it)
             }

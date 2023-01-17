@@ -18,9 +18,9 @@ class RabbitRunner(
 ) : ApplicationRunner {
     private val logger = KotlinLogging.logger {}
     override fun run(args: ApplicationArguments?) {
-        val QUEUE_NAME = "payment";
+/*        val QUEUE_NAME = "payment";
         val factory = ConnectionFactory()
-        factory.setHost("localhost")
+        factory.setHost("host.docker.internal")
         val connection: Connection = factory.newConnection()
         val channel: Channel = connection.createChannel()
         channel.queueDeclare(
@@ -45,6 +45,6 @@ class RabbitRunner(
                 logger.info("[x] Message Recieved' $message'")
             }
         }
-        channel.basicConsume(QUEUE_NAME, true, consumer)
+        channel.basicConsume(QUEUE_NAME, true, consumer)*/
     }
 }
