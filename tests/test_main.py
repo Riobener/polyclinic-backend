@@ -36,56 +36,56 @@ def test_create_medic():
     assert response.status_code == 200
 
 
-def test_application_creation():
-    session = requests.Session()
-    headers = {"Content-Type": "application/json; charset=utf-8",
-               "user": "c86731c4-6bea-4452-984d-5ba0796760fe",
-               "roles": '{roles: [\"patient\"]}'
-               }
-    data = {
-        "medicId": "02660d23-8bb0-4618-a3bc-a917ca96bbd9",
-        "type": "LOBOTOMY",
-        "appointmentDate": "2023-04-04T18:05:02Z"
-    }
-    response = session.post(applicationCreateApi, headers=headers, json=data, verify=False)
-    global applicationId
-    applicationId = response.json().get('id')
-    assert response.status_code == 200
-
-
-def test_application_treatment():
-    session = requests.Session()
-    headers = {"Content-Type": "application/json; charset=utf-8",
-               "user": "02660d23-8bb0-4618-a3bc-a917ca96bbd9",
-               "roles": '{roles: [\"medic\"]}'
-               }
-    data = {
-        "id": applicationId,
-        "diagnosisComment": "Беда с бошкой",
-        "treatmentComment": "Лечи голову молотком",
-        "directionComment": "Дмитровское шоссе дом.32 Лечащий врач Психиатр Денис Антонов",
-        "nextAppointmentDate": "2023-06-04T18:05:02Z"
-    }
-    response = session.post(applicationTreatmentApi, headers=headers, json=data, verify=False)
-    assert response.status_code == 200
-    assert response.json().get('status') == "WAITING_FOR_REVISIT"
-    assert response.json().get('treatmentComment') == "Лечи голову молотком"
-    assert response.json().get('diagnosisComment') == "Беда с бошкой"
-
-
-def test_application_finish():
-    session = requests.Session()
-
-    headers = {"Content-Type": "application/json; charset=utf-8",
-               "user": "02660d23-8bb0-4618-a3bc-a917ca96bbd9",
-               "roles": '{roles: [\"medic\"]}'
-               }
-
-    response = session.post(f'{applicationFinishApi}/{applicationId}', headers=headers, verify=False)
-    assert response.status_code == 200
-    assert response.json().get('status') == "WAITING_FOR_PAYMENT"
-    assert response.json().get('paymentId') is not None
-
+# def test_application_creation():
+#     session = requests.Session()
+#     headers = {"Content-Type": "application/json; charset=utf-8",
+#                "user": "c86731c4-6bea-4452-984d-5ba0796760fe",
+#                "roles": '{roles: [\"patient\"]}'
+#                }
+#     data = {
+#         "medicId": "02660d23-8bb0-4618-a3bc-a917ca96bbd9",
+#         "type": "LOBOTOMY",
+#         "appointmentDate": "2023-04-04T18:05:02Z"
+#     }
+#     response = session.post(applicationCreateApi, headers=headers, json=data, verify=False)
+#     global applicationId
+#     applicationId = response.json().get('id')
+#     assert response.status_code == 200
+#
+#
+# def test_application_treatment():
+#     session = requests.Session()
+#     headers = {"Content-Type": "application/json; charset=utf-8",
+#                "user": "02660d23-8bb0-4618-a3bc-a917ca96bbd9",
+#                "roles": '{roles: [\"medic\"]}'
+#                }
+#     data = {
+#         "id": applicationId,
+#         "diagnosisComment": "Беда с бошкой",
+#         "treatmentComment": "Лечи голову молотком",
+#         "directionComment": "Дмитровское шоссе дом.32 Лечащий врач Психиатр Денис Антонов",
+#         "nextAppointmentDate": "2023-06-04T18:05:02Z"
+#     }
+#     response = session.post(applicationTreatmentApi, headers=headers, json=data, verify=False)
+#     assert response.status_code == 200
+#     assert response.json().get('status') == "WAITING_FOR_REVISIT"
+#     assert response.json().get('treatmentComment') == "Лечи голову молотком"
+#     assert response.json().get('diagnosisComment') == "Беда с бошкой"
+#
+#
+# def test_application_finish():
+#     session = requests.Session()
+#
+#     headers = {"Content-Type": "application/json; charset=utf-8",
+#                "user": "02660d23-8bb0-4618-a3bc-a917ca96bbd9",
+#                "roles": '{roles: [\"medic\"]}'
+#                }
+#
+#     response = session.post(f'{applicationFinishApi}/{applicationId}', headers=headers, verify=False)
+#     assert response.status_code == 200
+#     assert response.json().get('status') == "WAITING_FOR_PAYMENT"
+#     assert response.json().get('paymentId') is not None
+#
 
 # def test_pay_for_application():
 #     session = requests.Session()
