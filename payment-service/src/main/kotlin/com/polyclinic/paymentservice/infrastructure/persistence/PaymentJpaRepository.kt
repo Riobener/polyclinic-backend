@@ -10,4 +10,7 @@ import java.util.UUID
 @Repository
 interface PaymentJpaRepository : JpaRepository<JpaPayment, UUID> {
     fun save(jpaPayment: JpaPayment): JpaPayment
+    fun findByUserId(userId: UUID): JpaPayment
+    fun findAllByUserId(userId: UUID): List<JpaPayment>
+    fun findByApplicationId(applicationId: UUID): JpaPayment?
 }

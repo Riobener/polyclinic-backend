@@ -12,15 +12,16 @@ class PaymentService(
     private val paymentRepository: PaymentJpaRepository,
 ){
 
-    fun findById(id: UUID): JpaPayment? {
-        return paymentRepository.findByIdOrNull(id)
+    fun findAllByUserId(userId: UUID): List<JpaPayment> {
+        return paymentRepository.findAllByUserId(userId)
     }
 
-    fun markAsPaid(applicationId: UUID): JpaPayment? {
-        return paymentRepository.findByIdOrNull(applicationId)?.let{
-            it.status = true
-            paymentRepository.save(it)
-        }
+    fun findByUserId(userId: UUID): JpaPayment? {
+        return paymentRepository.findByUserId(userId)
+    }
+
+    fun findByApplicationId(applicationId: UUID): JpaPayment? {
+        return paymentRepository.findByApplicationId(applicationId)
     }
 
     fun save(jpaPayment: JpaPayment): JpaPayment {

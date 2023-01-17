@@ -1,6 +1,7 @@
 package com.polyclinic.paymentservice.application
 
 import com.polyclinic.paymentservice.domain.entities.JpaPayment
+import com.polyclinic.paymentservice.domain.entities.PaymentInputDto
 import com.polyclinic.paymentservice.infrastructure.services.PaymentService
 import com.rabbitmq.client.Channel
 import com.rabbitmq.client.Connection
@@ -50,31 +51,39 @@ class PaymentController(
     @PostMapping("/health")
     fun checkHealth() = "All good"
 
-    @PostMapping("/markPaid")
-    fun markAsPaid(@RequestParam id: UUID): ResponseEntity<*>? {
+    @PostMapping("/markPaid/{applicationId}")
+    fun markAsPaid(@RequestHeader(name = "User") userId: String, @PathVariable(name = "applicationId") applicationId: String): ResponseEntity<Any> {
         return ResponseEntity.ok(
-            paymentService.markAsPaid(id)?.let {
+            paymentService.findByApplicationId(UUID.fromString(applicationId))?.let {
+                if(it.userId != UUID.fromString(userId))
+                    return ResponseEntity.badRequest().body("Нет доступа к данному платежу")
+                it.status = true
+                val result = paymentService.save(it)
                 sendPaymentReadyMessage(paymentId = it.id.toString())
-            })
+                result
+            }
+        )
     }
 
     @PostMapping("/create")
-    fun save(): ResponseEntity<String> {
+    fun save(@RequestBody payment: PaymentInputDto): ResponseEntity<String> {
         return ResponseEntity.ok(
             paymentService.save(
                 JpaPayment(
                     id = UUID.randomUUID(),
                     updateAt = Instant.now(),
                     status = false,
-                    cost = (0..10000).random()
+                    cost = (0..10000).random(),
+                    userId = UUID.fromString(payment.userId),
+                    applicationId = UUID.fromString(payment.applicationId)
                 )
             ).id.toString()
         )
     }
 
-    @GetMapping("/byId")
-    fun findById(@RequestParam id: UUID): ResponseEntity<*>? {
-        val result = paymentService.findById(id)
+    @GetMapping("/findAll")
+    fun findAllById(@RequestHeader(name = "User") userId: String): ResponseEntity<Any>? {
+        val result = paymentService.findAllByUserId(userId = UUID.fromString(userId))
         return ResponseEntity.ok(result)
     }
 }

@@ -4,7 +4,6 @@ import java.time.Instant
 import java.util.*
 
 data class PatientUpdateInputDto(
-    val id: String,
     val fio: String,
     val address:String,
     val phone:String,

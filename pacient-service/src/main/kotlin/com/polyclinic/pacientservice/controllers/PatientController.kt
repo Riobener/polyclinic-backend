@@ -27,13 +27,15 @@ class PatientController(
     @GetMapping("/health")
     fun checkHealth() = "All good"
 
-    @GetMapping("/find/byAccountId/{id}")
-    fun getPatient(@PathVariable id: String): ResponseEntity<Any> {
-        return ResponseEntity.ok(patientService.findById(UUID.fromString(id)))
+    @GetMapping("/find/byId")
+    fun getPatient(
+        @RequestHeader(name = "User") userId: String,
+    ): ResponseEntity<Any> {
+        return ResponseEntity.ok(patientService.findById(UUID.fromString(userId)))
     }
 
     @GetMapping("/export/{id}")
-    fun exportPatient(@PathVariable id: String,  response: HttpServletResponse) {
+    fun exportPatient(@PathVariable id: String, response: HttpServletResponse) {
         patientService.findById(UUID.fromString(id))?.let { patient ->
             File("${patient.id}.txt").bufferedWriter().use { out ->
                 out.write("ФИО:${patient.fio}\n")
@@ -47,7 +49,7 @@ class PatientController(
                 }
             }
             response.contentType = "application/octet-stream"
-            response.setHeader("Content-Disposition","attachment;filename="+"${patient.id}.txt")
+            response.setHeader("Content-Disposition", "attachment;filename=" + "${patient.id}.txt")
             val inputStream: InputStream = FileInputStream(File("${patient.id}.txt"))
             IOUtils.copy(inputStream, response.outputStream)
             response.flushBuffer()
@@ -55,29 +57,23 @@ class PatientController(
     }
 
     @PostMapping("/update")
-    fun updatePatient(@RequestBody patientUpdateInputDto: PatientUpdateInputDto): ResponseEntity<String> {
-        patientService.updatePatient(patientUpdateInputDto)
-        return ResponseEntity.ok()
-            .body("Пациент успешно обновлён")
+    fun updatePatient(
+        @RequestHeader(name = "User") userId: String,
+        @RequestBody patientUpdateInputDto: PatientUpdateInputDto
+    ): ResponseEntity<Any>? {
+        return ResponseEntity.ok(patientService.updatePatient(UUID.fromString(userId), patientUpdateInputDto))
     }
 
     @PostMapping("/save/all")
-    fun saveAllPatients(@RequestBody patients:List<Patient>): ResponseEntity<String> {
+    fun saveAllPatients(@RequestBody patients: List<Patient>): ResponseEntity<String> {
         patientService.saveAllPatients(patients)
         return ResponseEntity.ok()
             .body("Пациенты успешно добавлены")
     }
 
-    @PostMapping("/save")
-    fun savePatient(@RequestBody patient: Patient):ResponseEntity<String> {
-        patientService.savePatient(patient)
-        return ResponseEntity.ok()
-            .body("Пациент успешно добавлен")
-    }
-
     @PostMapping("/medical/history")
-    fun assignMedicalHistory(@RequestBody medicalHistory: PatientMedicalHistoryInputDto):ResponseEntity<Any> {
-        return ResponseEntity.ok(patientService.findById(UUID.fromString(medicalHistory.id))?.let{
+    fun assignMedicalHistory(@RequestBody medicalHistory: PatientMedicalHistoryInputDto): ResponseEntity<Any> {
+        return ResponseEntity.ok(patientService.findById(UUID.fromString(medicalHistory.id))?.let {
             it.medicalHistory.add("${Instant.parse(medicalHistory.date)} ${medicalHistory.description}")
             patientService.savePatient(it)
         })

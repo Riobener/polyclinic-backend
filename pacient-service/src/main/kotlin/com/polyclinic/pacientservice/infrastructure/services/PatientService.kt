@@ -18,8 +18,8 @@ class PatientService(
         return patientRepository.findByIdOrNull(id)
     }
 
-    fun updatePatient(patientUpdateInputDto: PatientUpdateInputDto): Patient? {
-        return patientRepository.findByIdOrNull(UUID.fromString(patientUpdateInputDto.id))?.let {
+    fun updatePatient(userId: UUID, patientUpdateInputDto: PatientUpdateInputDto): Patient? {
+        return patientRepository.findByIdOrNull(userId)?.let {
             it.fio = patientUpdateInputDto.fio
             it.address = patientUpdateInputDto.address
             it.phone = patientUpdateInputDto.phone
