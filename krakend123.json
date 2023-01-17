@@ -422,50 +422,6 @@
       ]
     },
     {
-      "endpoint": "/kraken/medic/find/full/byId/{id}",
-      "method": "GET",
-      "output_encoding": "no-op",
-      "input_headers": [
-        "User",
-        "roles"
-      ],
-      "extra_config": {
-        "auth/validator": {
-          "alg": "RS256",
-          "jwk_url": "http://host.docker.internal:8484/auth/realms/master/protocol/openid-connect/certs",
-          "roles_key_is_nested": true,
-          "roles_key": "realm_access.roles",
-          "roles": ["medic"],
-          "disable_jwk_security": true,
-          "propagate_claims": [
-            ["realm_access", "roles"],
-            ["sub", "User"]
-          ]
-        }
-      },
-      "backend": [
-        {
-          "url_pattern": "/medic/find/full/byId/{id}",
-          "encoding": "no-op",
-          "sd": "static",
-          "method": "GET",
-          "host": [
-            "http://host.docker.internal:8083"
-          ],
-          "disable_host_sanitize": false,
-          "extra_config": {
-            "modifier/martian": {
-              "header.Modifier": {
-                "scope": ["request", "response"],
-                "name": "Content-Type",
-                "value": "application/json"
-              }
-            }
-          }
-        }
-      ]
-    },
-    {
       "endpoint": "/kraken/medic/save/all",
       "method": "POST",
       "output_encoding": "no-op",
@@ -479,7 +435,7 @@
           "jwk_url": "http://host.docker.internal:8484/auth/realms/master/protocol/openid-connect/certs",
           "roles_key_is_nested": true,
           "roles_key": "realm_access.roles",
-          "roles": ["medic"],
+          "roles": ["medic", "patient"],
           "disable_jwk_security": true,
           "propagate_claims": [
             ["realm_access", "roles"],
@@ -534,6 +490,50 @@
       "backend": [
         {
           "url_pattern": "/medic/payment/markPaid",
+          "encoding": "no-op",
+          "sd": "static",
+          "method": "POST",
+          "host": [
+            "http://host.docker.internal:8085"
+          ],
+          "disable_host_sanitize": false,
+          "extra_config": {
+            "modifier/martian": {
+              "header.Modifier": {
+                "scope": ["request", "response"],
+                "name": "Content-Type",
+                "value": "application/json"
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "endpoint": "/kraken/payment/findAll",
+      "method": "POST",
+      "output_encoding": "no-op",
+      "input_headers": [
+        "User",
+        "roles"
+      ],
+      "extra_config": {
+        "auth/validator": {
+          "alg": "RS256",
+          "jwk_url": "http://host.docker.internal:8484/auth/realms/master/protocol/openid-connect/certs",
+          "roles_key_is_nested": true,
+          "roles_key": "realm_access.roles",
+          "roles": ["patient"],
+          "disable_jwk_security": true,
+          "propagate_claims": [
+            ["realm_access", "roles"],
+            ["sub", "User"]
+          ]
+        }
+      },
+      "backend": [
+        {
+          "url_pattern": "/medic/payment/findAll",
           "encoding": "no-op",
           "sd": "static",
           "method": "POST",
