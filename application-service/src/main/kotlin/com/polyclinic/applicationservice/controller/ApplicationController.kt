@@ -143,6 +143,7 @@ class ApplicationController(
                 }
                 applicationService.saveApplication(it)
             }
+
         )
     }
 
