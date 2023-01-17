@@ -466,7 +466,7 @@
       ]
     },
     {
-      "endpoint": "/kraken/payment/markPaid/{applicationId}",
+      "endpoint": "/kraken/payments/markPaid/{applicationId}",
       "method": "POST",
       "output_encoding": "no-op",
       "input_headers": [
@@ -489,7 +489,7 @@
       },
       "backend": [
         {
-          "url_pattern": "/payment/markPaid/{applicationId}",
+          "url_pattern": "/payments/markPaid/{applicationId}",
           "encoding": "no-op",
           "sd": "static",
           "method": "POST",
@@ -510,7 +510,7 @@
       ]
     },
     {
-      "endpoint": "/kraken/payment/findAll",
+      "endpoint": "/kraken/payments/findAll",
       "method": "GET",
       "output_encoding": "no-op",
       "input_headers": [
@@ -533,7 +533,7 @@
       },
       "backend": [
         {
-          "url_pattern": "/payment/findAll",
+          "url_pattern": "/payments/findAll",
           "encoding": "no-op",
           "sd": "static",
           "method": "GET",
