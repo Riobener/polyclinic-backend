@@ -12,8 +12,27 @@ paymentFinishApi = 'http://localhost:8085/payments/markPaid'
 
 applicationsFindAllApi = 'http://localhost:8081/applications/byAccount'
 
+patientSaveAll = 'http://localhost:8082/patient/save/all'
+
 applicationId = ''
 
+def test_save_pacient():
+    session = requests.Session()
+    headers = {"Content-Type": "application/json; charset=utf-8",
+               "user": "c86731c4-6bea-4452-984d-5ba0796760fe",
+               "roles": '{roles: [\"patient\"]}'
+               }
+    data = [{
+        "id": "c86731c4-6bea-4452-984d-5ba0796760fe",
+        "fio": "Василий Иванов",
+        "address": "123",
+        "phone": "123",
+        "birthdayDate": "1999-04-04T18:05:05Z",
+        "sex": "Боевой вертолет",
+        "medicalHistory": []
+    }]
+    response = session.post(patientSaveAll, headers=headers, json=data, verify=False)
+    assert response.status_code == 200
 
 def test_create_medic():
     session = requests.Session()
