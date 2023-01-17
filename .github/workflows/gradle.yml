@@ -35,7 +35,7 @@ jobs:
       - name: sleep
         run: sleep 20
       - name: Check containers
-        run: docker pm
+        run: docker ps
       - name: Run tests
         run: pytest 
       - name: sleep
