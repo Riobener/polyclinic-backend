@@ -17,6 +17,20 @@ jobs:
       - name: Start containers
         run: docker-compose up -d --build
         
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+      - name: Install pytest
+        run: pip install pytest
+      - name: Install requests
+        run: pip install requests
+      - name: sleep
+        run: sleep 150
+      - name: Run tests
+        run: pytest 
+      - name: sleep
+        run: sleep 15
       - name: Stop containers
         if: always()
         run: docker-compose down
