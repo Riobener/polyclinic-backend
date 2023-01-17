@@ -35,11 +35,6 @@ jobs:
       - name: sleep
         run: sleep 20
       - name: Check containers
-        run: docker ps
+        run: docker ps -a
       - name: Run tests
         run: pytest 
-      - name: sleep
-        run: sleep 15
-      - name: Stop containers
-        if: always()
-        run: docker-compose down
