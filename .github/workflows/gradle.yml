@@ -26,7 +26,7 @@ jobs:
       - name: Install requests
         run: pip install requests
       - name: sleep
-        run: sleep 65
+        run: sleep 60
       - name: Run tests
         run: pytest 
       - name: sleep
